@@ -1,0 +1,2 @@
+# At project root(front-end):
+$ go run ./cmd/web
