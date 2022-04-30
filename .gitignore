@@ -1,2 +1,5 @@
 .DS_Store
-workspace.code-workspace
+frontApp
+frontApp.exe
+brokerApp
+brokerApp.exe
