@@ -1,0 +1,13 @@
+# For Mac/Linux:
+    # Start broker-service
+    $ make up_build
+
+    # Start front-end:
+    $ make start
+
+    # Stop the front-end:
+    $ make stop
+
+    # Stop broker-service:
+    $ make down
+
