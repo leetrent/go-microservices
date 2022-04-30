@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "front-end"
+		},
+		{
+			"path": "notes"
+		},
+		{
+			"path": "broker-service"
+		},
+		{
+			"path": "project"
+		},
+		{
+			"path": "makefiles"
+		}
+	]
+}
