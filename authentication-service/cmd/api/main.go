@@ -24,13 +24,23 @@ type Config struct {
 }
 
 func main() {
+	logSnippet := "[authentication-service][main.go] =>"
+
 	log.Println("Starting authentication service...")
 
 	conn := connectToDB()
-	if conn != nil {
-		logSnippet := "[authentication-service][main.go] =>"
-		log.Panic(logSnippet + "Can't connect to PostgreSQL DB")
+	if conn == nil {
+		log.Panic(logSnippet + "DB connection is null, can't connect to PostgreSQL DB")
 	}
+
+	log.Printf("%s DB connection IS NOT null...", logSnippet)
+
+	err := conn.Ping()
+	if err != nil {
+		log.Panic(logSnippet + "sql.DB.Ping() return an error. Can't connect to PostgreSQL DB")
+	}
+
+	log.Printf("%s sql.DB.Ping() DID NOT return an error. Successfully connected to PostgreSQL DB...", logSnippet)
 
 	// Set up configuration...
 	app := Config{
@@ -43,7 +53,7 @@ func main() {
 		Handler: app.routes(),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic(err)
 	}
