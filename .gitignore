@@ -3,3 +3,6 @@ frontApp
 frontApp.exe
 brokerApp
 brokerApp.exe
+authApp
+authApp.exe
+db-data/
