@@ -22,6 +22,9 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
+
+	logSnippet := "[broker-service][handlers][HandleSubmission] =>"
+
 	var requestPayload RequestPayload
 
 	err := app.readJSON(w, r, &requestPayload)
@@ -31,9 +34,13 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("\n%s (requestPayload.Action): %s", logSnippet, requestPayload.Action)
+
 	switch requestPayload.Action {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
+	case "log":
+		app.logItem(w, requestPayload.Log)
 	default:
 		app.errorJSON(w, errors.New("unknown submission request"))
 	}
@@ -101,5 +108,48 @@ func (app *Config) authenticate(w http.ResponseWriter, ap AuthPayload) {
 	responsePayload.Data = jsonFromAuthService.Data
 
 	app.writeJSON(w, http.StatusAccepted, responsePayload)
+}
 
+func (app *Config) logItem(w http.ResponseWriter, entry LogPayload) {
+
+	logSnippet := "[broker-service][handlers][logItem] =>"
+
+	jsonData, err := json.MarshalIndent(entry, "", "\t")
+	if err != nil {
+		log.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
+
+	logServiceURL := "http://logger-service/log"
+	request, err := http.NewRequest("POST", logServiceURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
+	request.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		log.Println(err)
+		app.errorJSON(w, err)
+		return
+	}
+	defer response.Body.Close()
+
+	log.Printf("\n%s (response.StatusCode): %d", logSnippet, response.StatusCode)
+
+	if response.StatusCode != http.StatusAccepted {
+		app.errorJSON(w, errors.New("logging attempt failed"), response.StatusCode)
+		return
+	}
+
+	responsePayload := jsonResponse{
+		Error:   false,
+		Message: "entry was successfully logged",
+	}
+
+	app.writeJSON(w, http.StatusAccepted, responsePayload)
 }
