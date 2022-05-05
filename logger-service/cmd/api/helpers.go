@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -58,12 +57,9 @@ func (app *Config) writeJSON(w http.ResponseWriter, status int, data any, header
 }
 
 func (app *Config) errorJSON(w http.ResponseWriter, err error, status ...int) error {
-	logSnippet := "[broker-service][helpers][errorJSON] =>"
-
 	statusCode := http.StatusBadRequest
 
 	if len(status) > 0 {
-		log.Printf("\n%s (paramStatus): %d", logSnippet, status[0])
 		statusCode = status[0]
 	}
 
