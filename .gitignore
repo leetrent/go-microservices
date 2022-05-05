@@ -5,4 +5,6 @@ brokerApp
 brokerApp.exe
 authApp
 authApp.exe
+loggerServiceApp
+loggerServiceApp.exe
 db-data/
