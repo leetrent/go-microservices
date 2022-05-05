@@ -22,6 +22,8 @@ func New(mongo *mongo.Client) Models {
 }
 
 func (l *LogEntry) Insert(entry LogEntry) error {
+	logSnippet := "\n[logger-service][models][Insert()] =>"
+
 	collection := client.Database("logs").Collection("logs")
 
 	_, err := collection.InsertOne(context.TODO(), LogEntry{
@@ -32,15 +34,16 @@ func (l *LogEntry) Insert(entry LogEntry) error {
 	})
 
 	if err != nil {
-		log.Println("Error inserting new log entry into logs collection")
+		log.Printf("%s (ERROR-collection.InsertOne()): %s", logSnippet, err.Error())
 		return err
 	}
+	log.Printf("%s (SUCCESS-collection.InsertOne())", logSnippet)
 
 	return nil
 }
 
 func (l *LogEntry) All() ([]*LogEntry, error) {
-	logSnippet := "Error encountered in [logger-service][models.go][All()] =>"
+	logSnippet := "\n[logger-service][models][All] =>"
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
@@ -51,7 +54,7 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 
 	cursor, err := collection.Find(context.TODO(), bson.D{}, opts)
 	if err != nil {
-		log.Printf("\n%s (collection.Find()): %v", logSnippet, err)
+		log.Printf("%s (ERROR-collection.Find()): %s", logSnippet, err.Error())
 		return nil, err
 	}
 	defer cursor.Close(ctx)
@@ -61,17 +64,21 @@ func (l *LogEntry) All() ([]*LogEntry, error) {
 		var item LogEntry
 		err := cursor.Decode(&item)
 		if err != nil {
-			log.Printf("\n%s (cursor.Decode()): %v", logSnippet, err)
+			log.Printf("%s (ERROR-cursor.Decode()): %s", logSnippet, err.Error())
 			return nil, err
 		} else {
 			logs = append(logs, &item)
 		}
 	}
 
+	log.Printf("%s (SUCCESS-len(logs)): %d", logSnippet, len(logs))
+
 	return logs, nil
 }
 
 func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
+	logSnippet := "\n[logger-service][models][GetOne] =>"
+
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -79,32 +86,41 @@ func (l *LogEntry) GetOne(id string) (*LogEntry, error) {
 
 	docID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
+		log.Printf("%s (ERROR-primitive.ObjectIDFromHex()): %s", logSnippet, err.Error())
 		return nil, err
 	}
 
 	var entry LogEntry
 	err = collection.FindOne(ctx, bson.M{"_id": docID}).Decode(&entry)
 	if err != nil {
+		log.Printf("%s (ERROR-collection.FindOne()): %s", logSnippet, err.Error())
 		return nil, err
 	}
+	log.Printf("%s (SUCCESS-collection.FindOne())", logSnippet)
 
 	return &entry, nil
 }
 
 func (l *LogEntry) DropCollection() error {
+	logSnippet := "\n[logger-service][models][DropCollection] =>"
+
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
 	collection := client.Database("logs").Collection("logs")
 
 	if err := collection.Drop(ctx); err != nil {
+		log.Printf("%s (ERROR-collection.Drop()): %s", logSnippet, err.Error())
 		return err
 	}
+	log.Printf("%s (SUCCESS-collection.Drop())", logSnippet)
 
 	return nil
 }
 
 func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
+	logSnippet := "\n[logger-service][models][Update] =>"
+
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -112,6 +128,7 @@ func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
 
 	docID, err := primitive.ObjectIDFromHex(l.ID)
 	if err != nil {
+		log.Printf("%s (ERROR-primitive.ObjectIDFromHex): %s", logSnippet, err.Error())
 		return nil, err
 	}
 
@@ -128,8 +145,10 @@ func (l *LogEntry) Update() (*mongo.UpdateResult, error) {
 	)
 
 	if err != nil {
+		log.Printf("%s (ERROR-collection.UpdateOne): %s", logSnippet, err.Error())
 		return nil, err
 	}
+	log.Printf("%s (SUCCESS-collection.UpdateOne)", logSnippet)
 
 	return result, err
 }
