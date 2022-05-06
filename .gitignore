@@ -7,4 +7,6 @@ authApp
 authApp.exe
 loggerServiceApp
 loggerServiceApp.exe
+mailerApp
+mailerApp.exe
 db-data/
