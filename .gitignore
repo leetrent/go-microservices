@@ -9,4 +9,6 @@ loggerServiceApp
 loggerServiceApp.exe
 mailerApp
 mailerApp.exe
+listenerApp
+listenerApp.exe
 db-data/
