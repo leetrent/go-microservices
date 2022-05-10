@@ -1,20 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"listener/event"
 	"log"
 	"math"
-	"net/http"
 	"os"
 	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-const webPort = "80"
-
 func main() {
-	logSnippet := "\n[broker-service][main][main] =>"
+	logSnippet := "\n[listener-service][main][main] =>"
 
 	// Connect to rabbitmq
 	rabbitConn, err := connect()
@@ -22,29 +19,31 @@ func main() {
 		log.Printf("%s (EXIT - connect()): %s", logSnippet, err.Error())
 		os.Exit(1)
 	}
-	log.Printf("%s (SUCESS - connect())", logSnippet)
+	defer rabbitConn.Close()
+	log.Printf("%s (INFO - Connected to RabbitMQ...)", logSnippet)
 
-	app := Config{
-		Rabbit: rabbitConn,
-	}
+	// Start listening for messages
+	log.Printf("%s (INFO - Listening to RabbitMQ messages...)", logSnippet)
 
-	log.Printf("Starting broker service on port %s\n", webPort)
-
-	// define http server
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
-		Handler: app.routes(),
-	}
-
-	// start the server
-	err = srv.ListenAndServe()
+	// Create message consumer
+	consumer, err := event.NewConsumer(rabbitConn)
 	if err != nil {
-		log.Panic(err)
+		log.Printf("%s (PANIC - event.NewConsumer): %s", logSnippet, err.Error())
+		panic(err)
 	}
+	log.Printf("%s (INFO - Message consumer successfully created...)", logSnippet)
+
+	// Watch the queue and consume events
+	err = consumer.Listen([]string{"log.INFO", "log.WARNING", "log.ERROR"})
+	if err != nil {
+		log.Printf("%s (PANIC - consumer.Listen): %s", logSnippet, err.Error())
+		panic(err)
+	}
+	log.Printf("%s (INFO - Listening for RabbitMQ messages...)", logSnippet)
 }
 
 func connect() (*amqp.Connection, error) {
-	logSnippet := "\n[broker-service][main][connect] =>"
+	logSnippet := "\n[listener-service][main][connect] =>"
 
 	var counts int64
 	var backOff = 1 * time.Second
