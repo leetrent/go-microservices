@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"broker/event"
 )
 
 func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +42,8 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 	case "auth":
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
-		app.logItem(w, requestPayload.Log)
+		//app.logItem(w, requestPayload.Log)
+		app.logEventViaRabbit(w, requestPayload.Log)
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 	default:
@@ -200,4 +203,55 @@ func (app *Config) sendMail(w http.ResponseWriter, msg MailPayload) {
 	}
 
 	app.writeJSON(w, http.StatusAccepted, responsePayload)
+}
+
+func (app *Config) logEventViaRabbit(rw http.ResponseWriter, lp LogPayload) {
+	logSnippet := "\n[broker-service][handlers][logEventViaRabbit] =>"
+
+	err := app.pushToQueue(lp.Name, lp.Data)
+	if err != nil {
+		log.Printf("%s (ERROR-app.pushToQueue): %s", logSnippet, err.Error())
+		app.errorJSON(rw, err)
+		return
+	}
+	log.Printf("%s (SUCCESS-app.pushToQueue):", logSnippet)
+
+	payload := jsonResponse{
+		Error:   false,
+		Message: "event logged via RabbitMQ",
+	}
+
+	app.writeJSON(rw, http.StatusAccepted, payload)
+}
+
+func (app *Config) pushToQueue(name, msg string) error {
+	logSnippet := "\n[broker-service][handlers][pushToQueue] =>"
+
+	emitter, err := event.NewEventEmitter(app.Rabbit)
+	if err != nil {
+		log.Printf("%s (ERROR-event.NewEventEmitter): %s", logSnippet, err.Error())
+		return err
+	}
+	log.Printf("%s (SUCCESS-event.NewEventEmitter):", logSnippet)
+
+	payload := LogPayload{
+		Name: name,
+		Data: msg,
+	}
+
+	j, err := json.MarshalIndent(&payload, "", "\t")
+	if err != nil {
+		log.Printf("%s (ERROR-json.MarshalIndent): %s", logSnippet, err.Error())
+		return err
+	}
+	log.Printf("%s (SUCCESS-json.MarshalIndent):", logSnippet)
+
+	err = emitter.Push(string(j), "log.INFO")
+	if err != nil {
+		log.Printf("%s (ERROR-emitter.Push): %s", logSnippet, err.Error())
+		return err
+	}
+	log.Printf("%s (SUCCESS-emitter.Push):", logSnippet)
+
+	return nil
 }
