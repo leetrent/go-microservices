@@ -105,7 +105,6 @@ func handlePayload(payload Payload) {
 		err := logEvent(payload)
 		if err != nil {
 			log.Printf("%s ( ERROR - logEvent[case:'auth', 'event'] ): %s", logSnippet, err.Error())
-			return err
 		}
 	case "auth":
 		// TODO: handle authenication processing using RabbitMQ
@@ -115,7 +114,6 @@ func handlePayload(payload Payload) {
 		err := logEvent(payload)
 		if err != nil {
 			log.Printf("%s ( ERROR - logEvent[case:'default'] ): %s", logSnippet, err.Error())
-			return err
 		}
 	}
 }
