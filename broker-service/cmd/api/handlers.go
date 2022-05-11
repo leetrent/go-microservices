@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/rpc"
 
 	"broker/event"
 )
@@ -43,7 +44,9 @@ func (app *Config) HandleSubmission(w http.ResponseWriter, r *http.Request) {
 		app.authenticate(w, requestPayload.Auth)
 	case "log":
 		//app.logItem(w, requestPayload.Log)
-		app.logEventViaRabbit(w, requestPayload.Log)
+		//app.logEventViaRabbit(w, requestPayload.Log)
+		app.logItemViaRPC(w, requestPayload.Log)
+
 	case "mail":
 		app.sendMail(w, requestPayload.Mail)
 	default:
@@ -254,4 +257,38 @@ func (app *Config) pushToQueue(name, msg string) error {
 	log.Printf("%s (SUCCESS-emitter.Push):", logSnippet)
 
 	return nil
+}
+
+func (app *Config) logItemViaRPC(rw http.ResponseWriter, lp LogPayload) {
+	logSnippet := "\n[broker-service][handlers][logItemViaRPC] =>"
+
+	client, err := rpc.Dial("tcp", "logger-service:5001")
+	if err != nil {
+		log.Printf("%s (ERROR-rpc.Dial): %s", logSnippet, err.Error())
+		app.errorJSON(rw, err)
+		return
+	}
+	log.Printf("%s (SUCCESS-rpc.Dial):", logSnippet)
+
+	rpcPayload := RPCPayload{
+		Name: lp.Name,
+		Data: lp.Data,
+	}
+
+	var rpcResult string
+	err = client.Call("RPCServer.LogInfo", rpcPayload, &rpcResult)
+	if err != nil {
+		log.Printf("%s (ERROR-client.Call): %s", logSnippet, err.Error())
+		app.errorJSON(rw, err)
+		return
+	}
+	log.Printf("%s (SUCCESS-client.Call):", logSnippet)
+	log.Printf("%s (rpcResult): %s", logSnippet, rpcResult)
+
+	responsePayload := jsonResponse{
+		Error:   false,
+		Message: rpcResult,
+	}
+
+	app.writeJSON(rw, http.StatusAccepted, responsePayload)
 }
