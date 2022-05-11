@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"log-service/data"
+	"net"
 	"net/http"
+	"net/rpc"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -51,9 +53,11 @@ func main() {
 		Models: data.New(client),
 	}
 
-	// Start web server
-	//go app.serve()
+	// Register RPC Server
+	err = rpc.Register(new(RPCServer))
+	go app.rpcListen()
 
+	// Start web server
 	log.Printf("%s (Starting logger-service on port %s)", logSnippet, webPort)
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%s", webPort),
@@ -67,16 +71,29 @@ func main() {
 	}
 }
 
-// func (app *Config) serve() {
-// 	srv := &http.Server{
-// 		Addr:    fmt.Sprintf(":%s", webPort),
-// 		Handler: app.routes(),
-// 	}
-// 	err := srv.ListenAndServe()
-// 	if err != nil {
-// 		log.Panic(err)
-// 	}
-// }
+func (app *Config) rpcListen() error {
+	logSnippet := "\n[logger-service][main][rpcListen()] =>"
+	log.Println("Starting RPC server on port ", rpcPort)
+
+	listen, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%s", rpcPort))
+	if err != nil {
+		log.Printf("%s (ERROR-netListen): %s", logSnippet, err.Error())
+		return err
+	}
+	defer listen.Close()
+	log.Printf("%s (SUCCESS-netListen):", logSnippet)
+
+	for {
+		rpcConn, err := listen.Accept()
+		if err != nil {
+			log.Printf("%s (CONTINUE-listen.Accept): %s", logSnippet, err.Error())
+			continue
+		}
+		log.Printf("%s (SUCCESS-listen.Accept)", logSnippet)
+
+		go rpc.ServeConn(rpcConn)
+	}
+}
 
 func connectToMongo() (*mongo.Client, error) {
 	logSnippet := "\n[logger-service][main][connectToMongo()] =>"
