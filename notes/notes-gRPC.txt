@@ -1,0 +1,37 @@
+$ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27
+$ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+
+Install protoc executable:
+https://grpc.io/docs/protoc-installation/
+https://github.com/protocolbuffers/protobuf/releases
+
+
+$ which protoc
+/c/Users/Lee/go/bin/protoc
+
+$ protoc --version
+libprotoc 3.20.1
+
+################################################################################
+# gRPC Server Code:
+################################################################################
+$ cd logger-service/logs
+$ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./logs.proto
+
+$ cd logger-service
+$ go get google.golang.org/grpc
+$ go get google.golang.org/protobuf
+
+
+################################################################################
+# gRPC Client Code:
+################################################################################
+$ cd broker-service/logs
+$ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./logs.proto
+
+$ cd broker-service
+$ go get google.golang.org/grpc
+$ go get google.golang.org/protobuf
+
+
+
