@@ -12,10 +12,26 @@ $ which protoc
 $ protoc --version
 libprotoc 3.20.1
 
+################################################################################
+# gRPC Server Code:
+################################################################################
 $ cd logger-service/logs
 $ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./logs.proto
 
+$ cd logger-service
 $ go get google.golang.org/grpc
 $ go get google.golang.org/protobuf
+
+
+################################################################################
+# gRPC Client Code:
+################################################################################
+$ cd broker-service/logs
+$ protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./logs.proto
+
+$ cd broker-service
+$ go get google.golang.org/grpc
+$ go get google.golang.org/protobuf
+
 
 
