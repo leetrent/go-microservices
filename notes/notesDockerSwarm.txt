@@ -1,0 +1,96 @@
+
+https://docs.docker.com/engine/swarm/
+
+Bret Fisher:
+https://www.bretfisher.com/
+https://www.bretfisher.com/tag/swarm/
+
+##############################################################################
+			Build and Tag Docker Images
+##############################################################################
+$ docker login
+Logging in with your password grants your terminal complete access to your account.
+For better security, log in with a limited-privilege personal access token. Learn more at https://docs.docker.com/go/access-tokens/
+
+##############################################################################
+# logger-service:
+##############################################################################
+$ docker build -f logger-service.dockerfile -t leetrent/logger-service:1.0.0 .
+$ docker push leetrent/logger-service:1.0.0
+
+##############################################################################
+# broker-service:
+##############################################################################
+$ docker build -f broker-service.dockerfile -t leetrent/broker-service:1.0.0 .
+$ docker push leetrent/broker-service:1.0.0
+
+##############################################################################
+# authentication-service:
+##############################################################################
+$ docker build -f authentication-service.dockerfile -t leetrent/authentication-service:1.0.0 .
+$ docker push leetrent/authentication-service:1.0.0
+
+##############################################################################
+# mail-service:
+##############################################################################
+$ docker build -f mail-service.dockerfile -t leetrent/mail-service:1.0.0 .
+$ docker push leetrent/mail-service:1.0.0
+
+##############################################################################
+# listener-service:
+##############################################################################
+$ docker build -f listener-service.dockerfile -t leetrent/listener-service:1.0.0 .
+$ docker push leetrent/listener-service:1.0.0
+
+
+##############################################################################
+			Initialize Docker Swarm
+##############################################################################
+$ cd project
+$ docker swarm init
+Swarm initialized: current node (6d2ureegmlbbfegd71oqd15em) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-2fwqiepn6745u6klsq8j6shjb2dbsqc7j5j2wjtuyznosyg9c2-374gqgrdev2g3te22xwo9v2fa 192.168.65.3:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+##############################################################################
+# Add a Docker Swarm Worker:
+##############################################################################
+docker swarm join-token worker
+
+##############################################################################
+# Add a Docker Swarm Manager:
+##############################################################################
+docker swarm join-token manager
+
+
+##############################################################################
+			Deploy Docker Swarm
+##############################################################################
+$ cd project
+$ docker stack deploy -c swarm.yml myapp
+$ docker service ls
+
+##############################################################################
+			Bring Docker Swarm Down
+##############################################################################
+docker stack rm myapp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

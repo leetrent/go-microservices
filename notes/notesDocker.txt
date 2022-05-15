@@ -1,2 +1,6 @@
 $ cd project
 $ docker-compose up -d
+
+# Docker Login:
+Logging in with your password grants your terminal complete access to your account.
+For better security, log in with a limited-privilege personal access token. Learn more at https://docs.docker.com/go/access-tokens/
