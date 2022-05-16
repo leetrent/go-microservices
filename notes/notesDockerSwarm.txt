@@ -79,6 +79,26 @@ $ docker service ls
 ##############################################################################
 docker stack rm myapp
 
+##############################################################################
+			Initialize Docker Swarm
+##############################################################################
+# Example:
+$ docker service scale myapp_listener-service=3
+$ docker service scale myapp_authentication-service=2
+
+##############################################################################
+			Update a Service in Docker Swarm
+##############################################################################
+# Example (going from version 1.0.0 to 1.0.1):
+$ cd logger-service
+$ docker build -f logger-service.dockerfile -t leetrent/logger-service:1.0.1 .
+$ docker push leetrent/logger-service:1.0.1
+$ cd project
+$ docker service scale myapp_logger-service=2
+# Scale up service (if needed) to make sure there are two instances running:
+$ docker service update --image leetrent/logger-service:1.0.1 myapp_logger-service
+# Update corresponding entry (logger-service) in swarm.yml
+
 
 
 
