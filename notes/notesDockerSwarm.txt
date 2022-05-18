@@ -21,8 +21,8 @@ $ docker push leetrent/logger-service:1.0.0
 ##############################################################################
 # broker-service:
 ##############################################################################
-$ docker build -f broker-service.dockerfile -t leetrent/broker-service:1.0.0 .
-$ docker push leetrent/broker-service:1.0.0
+$ docker build -f broker-service.dockerfile -t leetrent/broker-service:1.0.2 .
+$ docker push leetrent/broker-service:1.0.2
 
 ##############################################################################
 # authentication-service:
@@ -42,6 +42,11 @@ $ docker push leetrent/mail-service:1.0.0
 $ docker build -f listener-service.dockerfile -t leetrent/listener-service:1.0.0 .
 $ docker push leetrent/listener-service:1.0.0
 
+##############################################################################
+# front-end service:
+##############################################################################
+$ docker build -f front-end.dockerfile -t leetrent/front-end:1.0.3 .
+$ docker push leetrent/front-end:1.0.3
 
 ##############################################################################
 			Initialize Docker Swarm
@@ -98,6 +103,10 @@ $ docker service scale myapp_logger-service=2
 # Scale up service (if needed) to make sure there are two instances running:
 $ docker service update --image leetrent/logger-service:1.0.1 myapp_logger-service
 # Update corresponding entry (logger-service) in swarm.yml
+
+# Example #2:
+$ docker build -f broker-service.dockerfile -t leetrent/broker-service:1.0.1 .
+$ docker push leetrent/broker-service:1.0.1
 
 
 

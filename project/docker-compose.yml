@@ -4,6 +4,17 @@ services:
 
   broker-service:
     build:
+      context: ./../front-end
+      dockerfile: ./../broker-service/frontend.dockerfile
+    restart: always
+    ports:
+      - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  broker-service:
+    build:
       context: ./../broker-service
       dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
