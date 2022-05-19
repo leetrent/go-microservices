@@ -1,15 +1,55 @@
 #############################################################################
 # Setup firewall:
 #############################################################################
-$ ufw allow ssh
-$ ufw allow http
-$ ufw allow https
-$ ufw allow 2377/tcp
-$ ufw allow 2377/udp
-$ ufw allow 4789/udp
-$ ufw allow 8025/tcp
-$ ufw enable
-$ ufw status
+root@localhost:~# ufw allow ssh
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow http
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow https
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 2377/tcp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 7946/tcp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 7946/udp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 4789/udp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 8025/tcp
+Rules updated
+Rules updated (v6)
+
+root@localhost:~# ufw status
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere
+80/tcp                     ALLOW       Anywhere
+443                        ALLOW       Anywhere
+2377/tcp                   ALLOW       Anywhere
+7946/tcp                   ALLOW       Anywhere
+7946/udp                   ALLOW       Anywhere
+4789/udp                   ALLOW       Anywhere
+8025/tcp                   ALLOW       Anywhere
+22/tcp (v6)                ALLOW       Anywhere (v6)
+80/tcp (v6)                ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+2377/tcp (v6)              ALLOW       Anywhere (v6)
+7946/tcp (v6)              ALLOW       Anywhere (v6)
+7946/udp (v6)              ALLOW       Anywhere (v6)
+4789/udp (v6)              ALLOW       Anywhere (v6)
+8025/tcp (v6)              ALLOW       Anywhere (v6)
+
+root@localhost:~#
+
 
 #############################################################################
 # Create new user:
