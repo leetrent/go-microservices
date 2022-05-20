@@ -123,3 +123,65 @@ $ sudo apt update
 $ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 $ which docker
+
+#############################################################################
+# Initialize Docker Swarm:
+#############################################################################
+# Do the following on the manager node:
+$ sudo docker swarm init --advertise-addr <ip address>
+# Manager node example:
+$ sudo docker swarm init --advertise-addr 66.228.54.242
+---------------------------------------------------------------------------------------------------------------------------------------
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-0jv75xxday8fby551m9s6x8usajkff3upina70hn4o2tmg3h21-46sxhg9837yaev182jamfv3lk 66.228.54.242:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+---------------------------------------------------------------------------------------------------------------------------------------
+# Do the following on the worker node:
+$ sudo docker swarm join --token SWMTKN-1-0jv75xxday8fby551m9s6x8usajkff3upina70hn4o2tmg3h21-46sxhg9837yaev182jamfv3lk 66.228.54.242:2377
+---------------------------------------------------------------------------------------------------------------------------------------
+This node joined a swarm as a worker.
+---------------------------------------------------------------------------------------------------------------------------------------
+
+#############################################################################
+# Build Caddy Production Image:
+#############################################################################
+$ cd project
+$ docker build -f caddy.production.dockerfile -t leetrent/micro-caddy-production:1.0.0 .
+#############################################################################
+# Push Caddy Production Image to Docker Hub:
+#############################################################################
+$ docker push leetrent/micro-caddy-production:1.0.0
+
+# On node do the following:
+$ cd /
+$ sudo mkdir swarm
+$ sudo chown lee:lee swarm/
+$ cd swarm
+$ mkdir caddy_data
+$ mkdir caddy_config
+$ mkdir db-data
+$ mkdir db-data/mongo
+$ mkdir db-data/postgres
+$ sudo vi swarm.yml
+# copy contents of swam.production.yml into swarm.yml
+$ sudo docker stack deploy -c swarm.yml myapp
+
+#############################################################################
+# Add lee to Docker group:
+#############################################################################
+$ sudo usermod -aG docker lee
+
+#############################################################################
+# Shut down
+#############################################################################
+$ sudo docker stack rm myapp
+
+
+$ sudo docker stack deploy -c swarm.yml myapp
+$ sudo docker node ls
+$ sudo watch docker node ps
+
+
+
