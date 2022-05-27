@@ -1,6 +1,8 @@
 .DS_Store
 frontApp
 frontApp.exe
+frontEndApp
+frontEndApp.exe
 brokerApp
 brokerApp.exe
 authApp
@@ -12,3 +14,5 @@ mailerApp.exe
 listenerApp
 listenerApp.exe
 db-data/
+caddy_data/
+caddy_config/

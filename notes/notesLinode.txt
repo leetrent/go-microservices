@@ -1,0 +1,187 @@
+
+#############################################################################
+# Find packages that need to be updated:
+#############################################################################
+$ sudo apt update
+
+#############################################################################
+# Upgrade packages:
+#############################################################################
+$ sudo apt upgrade
+
+#############################################################################
+# Setup firewall:
+#############################################################################
+root@localhost:~# ufw allow ssh
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow http
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow https
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 2377/tcp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 7946/tcp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 7946/udp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 4789/udp
+Rules updated
+Rules updated (v6)
+root@localhost:~# ufw allow 8025/tcp
+Rules updated
+Rules updated (v6)
+
+root@localhost:~# ufw enable
+root@localhost:~# ufw status
+Status: active
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW       Anywhere
+80/tcp                     ALLOW       Anywhere
+443                        ALLOW       Anywhere
+2377/tcp                   ALLOW       Anywhere
+7946/tcp                   ALLOW       Anywhere
+7946/udp                   ALLOW       Anywhere
+4789/udp                   ALLOW       Anywhere
+8025/tcp                   ALLOW       Anywhere
+22/tcp (v6)                ALLOW       Anywhere (v6)
+80/tcp (v6)                ALLOW       Anywhere (v6)
+443 (v6)                   ALLOW       Anywhere (v6)
+2377/tcp (v6)              ALLOW       Anywhere (v6)
+7946/tcp (v6)              ALLOW       Anywhere (v6)
+7946/udp (v6)              ALLOW       Anywhere (v6)
+4789/udp (v6)              ALLOW       Anywhere (v6)
+8025/tcp (v6)              ALLOW       Anywhere (v6)
+
+root@localhost:~#
+
+
+#############################################################################
+# Create new user:
+#############################################################################
+$ adduser <name of newly added user>
+$ password: <password of newly added user>
+
+#############################################################################
+# Grant newly created user root privileges:
+#############################################################################
+$ usermod -aG sudo <username>
+
+#############################################################################
+# Open a new shell and login as newly created user with root privileges:
+#############################################################################
+$ ssh <newly created user>@<ip address>
+# Enter password of newly created user with root privileges
+$ sudo ls
+# Enter password of newly created user with root privileges
+
+#############################################################################
+Set hostname for machine:
+#############################################################################
+$ sudo hostnamectl set-hostname <machine hostname>
+# Example:
+$ sudo hostnamectl set-hostname <node-1>
+
+#############################################################################
+# Update hosts file:
+#############################################################################
+$ sudo vi /etc/hosts
+# Insert hostname, tab and IP Address at the end of hosts file:
+# Example:
+$ node-1    <ip address>
+$ node-2    <ip address>
+
+#############################################################################
+# Install Docker:
+#############################################################################
+# https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+$ sudo apt update
+
+$ sudo apt upgrade
+
+$ sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+$ echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+$ sudo apt update
+
+$ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+$ which docker
+
+#############################################################################
+# Initialize Docker Swarm:
+#############################################################################
+# Do the following on the manager node:
+$ sudo docker swarm init --advertise-addr <ip address>
+# Manager node example:
+$ sudo docker swarm init --advertise-addr 66.228.54.242
+---------------------------------------------------------------------------------------------------------------------------------------
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-0jv75xxday8fby551m9s6x8usajkff3upina70hn4o2tmg3h21-46sxhg9837yaev182jamfv3lk 66.228.54.242:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+---------------------------------------------------------------------------------------------------------------------------------------
+# Do the following on the worker node:
+$ sudo docker swarm join --token SWMTKN-1-0jv75xxday8fby551m9s6x8usajkff3upina70hn4o2tmg3h21-46sxhg9837yaev182jamfv3lk 66.228.54.242:2377
+---------------------------------------------------------------------------------------------------------------------------------------
+This node joined a swarm as a worker.
+---------------------------------------------------------------------------------------------------------------------------------------
+
+#############################################################################
+# Build Caddy Production Image:
+#############################################################################
+$ cd project
+$ docker build -f caddy.production.dockerfile -t leetrent/micro-caddy-production:1.0.0 .
+#############################################################################
+# Push Caddy Production Image to Docker Hub:
+#############################################################################
+$ docker push leetrent/micro-caddy-production:1.0.0
+
+# On node do the following:
+$ cd /
+$ sudo mkdir swarm
+$ sudo chown lee:lee swarm/
+$ cd swarm
+$ mkdir caddy_data
+$ mkdir caddy_config
+$ mkdir db-data
+$ mkdir db-data/mongo
+$ mkdir db-data/postgres
+$ sudo vi swarm.yml
+# copy contents of swam.production.yml into swarm.yml
+$ sudo docker stack deploy -c swarm.yml myapp
+
+#############################################################################
+# Add lee to Docker group:
+#############################################################################
+$ sudo usermod -aG docker lee
+
+#############################################################################
+# Shut down
+#############################################################################
+$ sudo docker stack rm myapp
+
+
+$ sudo docker stack deploy -c swarm.yml myapp
+$ sudo docker node ls
+$ sudo watch docker node ps
+
+
+

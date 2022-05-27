@@ -1,0 +1,4 @@
+$ cd project
+# Copy caddy.docker and Caddyfile to the root of project folder
+$ docker build -f caddy.dockerfile -t leetrent/micro-caddy:1.0.0 .
+$ docker push leetrent/micro-caddy:1.0.0
