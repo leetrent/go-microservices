@@ -73,7 +73,7 @@ $ kubectl get pods
 $ kubectl get svc
 $ kubectl get deployments
 ########################################################################################################################
-$ cd project
+$ cd project 
 $ kubectl apply -f k8s/rabbit.yml
 $ kubectl get pods
 $ kubectl get svc
@@ -84,4 +84,9 @@ $ kubectl apply -f k8s/broker.yml
 $ kubectl get pods
 $ kubectl get svc
 $ kubectl get deployments
+########################################################################################################################
+$ cd project
+$ kubectl logs <name of deployment>
+# Example:
+$ kubectl logs rabbitmq-645675ff6b-njxc2 
 ########################################################################################################################
