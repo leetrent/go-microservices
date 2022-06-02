@@ -8,55 +8,8 @@ https://kubernetes.io/docs/tasks/tools/
 ########################################################################################################################
 $ minikube delete
 $ minikube start --nodes=2
-* minikube v1.25.2 on Microsoft Windows 10 Home 10.0.19044 Build 19044
-* Automatically selected the docker driver. Other choices: virtualbox, ssh
-* Starting control plane node minikube in cluster minikube
-* Pulling base image ...
-* Downloading Kubernetes v1.23.3 preload ...
-    > gcr.io/k8s-minikube/kicbase: 379.06 MiB / 379.06 MiB  100.00% 5.71 MiB p/
-* Creating docker container (CPUs=2, Memory=4050MB) ...
-! Listening to 0.0.0.0 on external docker host 127.0.0.1. Please be advised
-* Preparing Kubernetes v1.23.3 on Docker 20.10.12 ...
-  - kubelet.housekeeping-interval=5m
-  - kubelet.cni-conf-dir=/etc/cni/net.mk
-  - Generating certificates and keys ...
-  - Booting up control plane ...
-  - Configuring RBAC rules ...
-* Configuring CNI (Container Networking Interface) ...
-* Verifying Kubernetes components...
-  - Using image gcr.io/k8s-minikube/storage-provisioner:v5
-* Enabled addons: storage-provisioner, default-storageclass
-
-* Starting worker node minikube-m02 in cluster minikube
-* Pulling base image ...
-* Creating docker container (CPUs=2, Memory=4050MB) ...
-! Listening to 0.0.0.0 on external docker host 127.0.0.1. Please be advised
-* Found network options:
-  - NO_PROXY=192.168.49.2
-  - no_proxy=192.168.49.2
-* Preparing Kubernetes v1.23.3 on Docker 20.10.12 ...
-  - env NO_PROXY=192.168.49.2
-* Verifying Kubernetes components...
-* Done! kubectl is now configured to use "minikube" cluster and "default" namespace by default
-########################################################################################################################
-
 ########################################################################################################################
 $ minikube status
-! Executing "docker container inspect minikube --format={{.State.Status}}" took an unusually long time: 2.9041483s
-* Restarting the docker service may improve performance.
-minikube
-type: Control Plane
-host: Running
-kubelet: Running
-apiserver: Running
-kubeconfig: Configured
-
-minikube-m02
-type: Worker
-host: Running
-kubelet: Running
-########################################################################################################################
-
 ########################################################################################################################
 $ minikube stop
 ########################################################################################################################
@@ -90,3 +43,9 @@ $ kubectl logs <name of deployment>
 # Example:
 $ kubectl logs rabbitmq-645675ff6b-njxc2 
 ########################################################################################################################
+$ cd project
+$ kubectl get deployments
+$ kubectl delete deployments <name of deployment> <name of deployment> <name of deployment>
+$ kubectl get svc
+$ kubectl delete svc <name of svc> <name of svc> <name of svc>
+$ kubectl apply -f k8s
