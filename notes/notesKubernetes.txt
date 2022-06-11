@@ -49,3 +49,17 @@ $ kubectl delete deployments <name of deployment> <name of deployment> <name of 
 $ kubectl get svc
 $ kubectl delete svc <name of svc> <name of svc> <name of svc>
 $ kubectl apply -f k8s
+########################################################################################################################
+$ cd project
+$ docker-compose -f postgres.yml up -d
+########################################################################################################################
+$ cd project
+$ kubectl get svc
+$ kubectl delete svc broker-service
+########################################################################################################################
+$ cd project
+$ kubectl expose deployment broker-service --type=LoadBalancer --port=8080 --target-port=8080
+$ kubectl get svc
+$ minikube tunnel
+$ cd front-end
+$ go run ./cmd/web
