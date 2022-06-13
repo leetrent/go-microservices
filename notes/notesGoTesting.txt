@@ -1,0 +1,2 @@
+$ cd authentication-service/cmd/api
+$ go test -v
