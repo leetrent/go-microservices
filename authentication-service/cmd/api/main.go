@@ -19,8 +19,8 @@ const webPort = "80"
 var counts int64 = 0
 
 type Config struct {
-	DB     *sql.DB
-	Models data.Models
+	Repo   data.Repository
+	Client *http.Client
 }
 
 func main() {
@@ -43,9 +43,13 @@ func main() {
 	log.Printf("%s sql.DB.Ping() DID NOT return an error. Successfully connected to PostgreSQL DB...", logSnippet)
 
 	// Set up configuration...
+	// app := Config{
+	// 	DB:     conn,
+	// 	Models: data.New(conn),
+	// }
+
 	app := Config{
-		DB:     conn,
-		Models: data.New(conn),
+		Client: &http.Client{},
 	}
 
 	srv := &http.Server{
@@ -99,5 +103,8 @@ func connectToDB() *sql.DB {
 		time.Sleep(2 * time.Second)
 		continue
 	}
+}
 
+func (app *Config) setupRepo(conn *sql.DB) {
+	app.Repo = data.NewPostgresRepository(conn)
 }
